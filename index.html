@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>♡왕전초 길찾기왕!♡</title>
+<meta name="theme-color" content="#e9f8ef">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="길찾기왕">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="같은 색 두 점을 이어 모든 칸을 채우는 점잇기(넘버링크) 퍼즐">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23e9f8ef'/%3E%3Cpath d='M14 20h16M14 20v20M14 40h14' stroke='%23e5332e' stroke-width='7' stroke-linecap='round' fill='none'/%3E%3Cpath d='M50 44H34M50 44V24M50 24H36' stroke='%232a6fd6' stroke-width='7' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#27463d;
+  --ink2:#4e6f64;
+  --soft:#84a49a;
+  --mint:#2fb48a;
+  --mint-deep:#178a67;
+  --mint-pale:#e9f8ef;
+  --cream:#fffdf4;
+  --line:#cfead9;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none !important}
+html,body{margin:0;padding:0}
+html{background:#eaf8f0}
+body{
+  margin:0 auto;
+  min-height:100vh;
+  min-height:100dvh;
+  max-width:600px;
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕","Noto Sans KR",system-ui,"Segoe UI",Roboto,sans-serif;
+  background:
+    radial-gradient(680px 360px at 50% -8%, #ffffff 0%, rgba(255,255,255,0) 62%),
+    radial-gradient(520px 340px at 100% 4%, rgba(190,240,214,.55) 0%, rgba(190,240,214,0) 72%),
+    linear-gradient(180deg,#f3fdf7 0%, #e9f8ef 48%, #fffcf0 100%);
+  -webkit-text-size-adjust:100%;
+  overflow-x:hidden;
+}
+.app{
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  min-height:100dvh;
+  padding:calc(6px + env(safe-area-inset-top)) 12px calc(8px + env(safe-area-inset-bottom));
+}
+
+/* ---------- 제목 줄: 헤더에는 제목만, 유틸 버튼은 그 아래 줄 ---------- */
+header.topbar{display:flex;align-items:center;justify-content:center;padding:3px 0 2px}
+header.topbar h1{
+  margin:0;font-size:clamp(19px,6.2vw,25px);font-weight:900;letter-spacing:-.045em;
+  line-height:1.18;white-space:nowrap;text-align:center;color:#0f7a5c;
+  text-shadow:0 1px 0 #fff,0 2px 0 rgba(255,255,255,.9),0 7px 16px rgba(23,138,103,.20);
+}
+.toptools{display:flex;align-items:center;justify-content:flex-end;gap:5px;height:26px;padding:0 1px}
+.toptools button{
+  display:inline-flex;align-items:center;gap:4px;border:0;background:transparent;
+  color:#6d8d81;font:inherit;font-size:11.5px;font-weight:800;padding:5px 8px;border-radius:9px;
+}
+.toptools button:active{background:rgba(23,138,103,.10)}
+.toptools button.off{color:#b3c6bd}
+
+.tagline{
+  margin:2px 0 6px;text-align:center;font-size:12.5px;font-weight:700;line-height:1.3;
+  color:#6d8d81;letter-spacing:-.02em;word-break:keep-all;
+}
+
+/* ---------- 단계 선택 ---------- */
+.stages{display:flex;gap:5px;padding:0 0 6px}
+.stage{
+  flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;padding:5px 1px 6px;border:1.6px solid var(--line);border-radius:12px;background:#fff;
+  font:inherit;color:#5d8074;box-shadow:0 2px 0 rgba(23,138,103,.07);
+}
+.stage b{font-size:12px;font-weight:900;white-space:nowrap;letter-spacing:-.04em}
+.stage span{font-size:9.5px;font-weight:800;color:#9ab6ab;white-space:nowrap;line-height:1.2}
+.stage.on{border-color:#27a97e;background:linear-gradient(180deg,#f2fdf7,#daf5e6);color:#0f7a5c;box-shadow:0 2px 0 rgba(23,138,103,.18)}
+.stage.on span{color:#2c9c76}
+.stage:active{transform:translateY(1px)}
+
+/* ---------- 문제 이동 ---------- */
+.pzbar{display:flex;align-items:center;justify-content:center;gap:6px;padding:0 0 6px}
+.navbtn{
+  width:34px;height:32px;flex:0 0 auto;border:1.6px solid var(--line);border-radius:11px;background:#fff;
+  color:#3f8f76;font:inherit;font-size:12px;font-weight:900;display:grid;place-items:center;padding:0;
+  box-shadow:0 2px 0 rgba(23,138,103,.08);
+}
+.navbtn:active{transform:translateY(1px)}
+.chips{display:flex;gap:6px}
+.chip{
+  width:38px;height:32px;border:1.6px solid var(--line);border-radius:11px;background:#fff;
+  color:#5d8074;font:inherit;font-size:14px;font-weight:900;position:relative;padding:0;
+  box-shadow:0 2px 0 rgba(23,138,103,.08);
+}
+.chip.on{border-color:#27a97e;background:linear-gradient(180deg,#f2fdf7,#d6f4e2);color:#0f7a5c}
+.chip .tk{position:absolute;top:-5px;right:-3px;font-size:11px;color:#e79f22;line-height:1}
+.chip:active{transform:translateY(1px)}
+
+/* ---------- 판 머리 ---------- */
+.boardhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:0 2px 4px}
+.boardhead b{font-size:14px;font-weight:900;letter-spacing:-.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.boardhead span{font-size:11px;font-weight:800;color:#8aa79d;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* ---------- 판 ---------- */
+.boardwrap{
+  flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+#cv{display:block;touch-action:none;-webkit-user-select:none;user-select:none;border-radius:16px}
+
+/* ---------- 안내 줄 ---------- */
+.say{
+  margin:6px 0 0;min-height:32px;display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:12.5px;font-weight:800;line-height:1.32;color:#5d8074;letter-spacing:-.02em;
+  word-break:keep-all;padding:0 4px;
+}
+.say.ok{color:#0d8f5e}
+.say.warn{color:#b65706}
+
+/* ---------- 버튼 ---------- */
+.btns{display:flex;gap:7px;padding:6px 0 0}
+.btns button{
+  flex:1 1 0;min-width:0;height:42px;border:1.6px solid var(--line);border-radius:13px;background:#fff;
+  font:inherit;font-size:12.5px;font-weight:900;color:#3f8f76;white-space:nowrap;
+  box-shadow:0 3px 0 rgba(23,138,103,.10);
+}
+.btns button:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(23,138,103,.10)}
+.btns button[disabled]{color:#bacfc6;box-shadow:0 3px 0 rgba(23,138,103,.05)}
+.btns button.hintbtn{background:linear-gradient(180deg,#fff8e2,#ffeec2);border-color:#f5d78a;color:#a86a05;box-shadow:0 3px 0 #f0d597}
+
+/* ---------- 알림 ---------- */
+.toast{
+  position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top));transform:translateX(-50%);
+  background:rgba(39,70,61,.94);color:#fff;padding:9px 16px;border-radius:99px;
+  font-size:12.5px;font-weight:800;z-index:60;max-width:90vw;text-align:center;pointer-events:none;
+  box-shadow:0 10px 24px rgba(24,60,48,.28);
+}
+
+/* ---------- 방법 ---------- */
+.mask{
+  position:fixed;inset:0;z-index:70;background:rgba(30,58,49,.42);
+  display:flex;align-items:center;justify-content:center;padding:22px;
+}
+.sheet{
+  width:100%;max-width:340px;max-height:82vh;overflow:auto;background:#fff;border-radius:22px;
+  padding:18px 18px 16px;box-shadow:0 24px 52px rgba(20,60,46,.34);
+}
+.sheet h2{margin:0 0 4px;font-size:18px;font-weight:900;letter-spacing:-.04em;color:#0f7a5c}
+.sheet p{margin:9px 0 0;font-size:12.5px;font-weight:700;line-height:1.55;color:#5d8074;word-break:keep-all}
+.sheet p b{color:#2c9c76;font-weight:900}
+.sheet .dotline{display:flex;gap:6px;margin:11px 0 2px}
+.sheet .dotline i{width:15px;height:15px;border-radius:50%;display:block}
+.sheet button{
+  width:100%;height:44px;margin-top:14px;border:0;border-radius:14px;font:inherit;font-size:14px;
+  font-weight:900;color:#fff;background:linear-gradient(160deg,#43c79b,#1f9d77);box-shadow:0 4px 0 #14795c;
+}
+.sheet button:active{transform:translateY(2px);box-shadow:0 2px 0 #14795c}
+
+@media (max-height:700px){
+  .tagline{display:none}
+  .say{min-height:20px;font-size:12px}
+  .btns button{height:38px}
+  .stage{padding:4px 1px 5px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar"><h1>♡왕전초 길찾기왕!♡</h1></header>
+  <div class="toptools">
+    <button id="sndBtn" type="button" aria-label="효과음 켜기/끄기"><span id="sndIco">🔊</span><span>소리</span></button>
+    <button id="helpBtn" type="button" aria-label="놀이 방법"><span>❓</span><span>방법</span></button>
+  </div>
+
+  <p class="tagline">같은 색 두 점을 잇고, 모든 칸을 빈칸 없이 채워요!</p>
+
+  <nav class="stages" id="stages" aria-label="단계 선택"></nav>
+
+  <div class="pzbar">
+    <button class="navbtn" id="prevBtn" type="button" aria-label="이전 문제">◀</button>
+    <div class="chips" id="chips" aria-label="문제 번호"></div>
+    <button class="navbtn" id="nextBtn" type="button" aria-label="다음 문제">▶</button>
+  </div>
+
+  <div class="boardhead">
+    <b id="pzTitle">1-1 첫걸음</b>
+    <span id="pzMeta">3×4 · 1 / 4</span>
+  </div>
+
+  <div class="boardwrap" id="boardWrap">
+    <canvas id="cv" aria-label="점잇기 판"></canvas>
+  </div>
+
+  <p class="say" id="say" aria-live="polite">남은 색 3개 · 빈칸 12칸</p>
+
+  <div class="btns">
+    <button id="btnUndo" type="button">되돌리기</button>
+    <button id="btnReset" type="button">처음부터</button>
+    <button id="btnHint" type="button" class="hintbtn">힌트 보기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<div class="mask" id="helpMask" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="놀이 방법">
+    <h2>이렇게 놀아요</h2>
+    <p><b>같은 색 두 점</b>을 손가락으로 이어 주세요. 상하좌우로만 움직이고, 한 칸씩 지나가요.</p>
+    <p>다른 색 선이나 다른 색 점 위로는 지나갈 수 없어요. 잘못 그었으면 <b>되돌리기</b>를 누르면 한 번에 한 동작씩 물러나요.</p>
+    <p>색을 다 이어도 <b>빈칸이 하나라도 남으면</b> 아직 완성이 아니에요. 판의 모든 칸을 채우면 다음 문제로 넘어가요.</p>
+    <p><b>힌트 보기</b>는 아직 못 이은 한 색의 길을 보여 주고, 그 길과 겹치던 다른 색 선은 지워요.</p>
+    <div class="dotline" aria-hidden="true">
+      <i style="background:#e5332e"></i><i style="background:#2a6fd6"></i><i style="background:#f0b400"></i>
+      <i style="background:#12a05c"></i><i style="background:#e7559f"></i><i style="background:#7c4be0"></i>
+      <i style="background:#ef7a18"></i>
+    </div>
+    <p>이 페이지는 아무것도 저장하지 않아요. 문제나 단계를 바꾸면 판이 새로 시작돼요.</p>
+    <button id="helpClose" type="button">알겠어요</button>
+  </div>
+</div>
+
+<script>
+var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4,"pairs":[{"color":"red","a":[2,0],"b":[0,1],"path":[[2,0],[1,0],[0,0],[0,1]]},{"color":"blue","a":[1,1],"b":[2,3],"path":[[1,1],[2,1],[2,2],[2,3]]},{"color":"yellow","a":[0,2],"b":[1,2],"path":[[0,2],[0,3],[1,3],[1,2]]}]},{"id":"1-2","stage":1,"no":2,"name":"꼬불길","cols":3,"rows":4,"pairs":[{"color":"red","a":[2,0],"b":[0,1],"path":[[2,0],[1,0],[0,0],[0,1]]},{"color":"blue","a":[1,1],"b":[1,3],"path":[[1,1],[1,2],[0,2],[0,3],[1,3]]},{"color":"yellow","a":[2,1],"b":[2,3],"path":[[2,1],[2,2],[2,3]]}]},{"id":"1-3","stage":1,"no":3,"name":"제비집","cols":3,"rows":4,"pairs":[{"color":"red","a":[1,0],"b":[0,1],"path":[[1,0],[0,0],[0,1]]},{"color":"blue","a":[2,0],"b":[2,3],"path":[[2,0],[2,1],[2,2],[2,3]]},{"color":"yellow","a":[1,1],"b":[1,3],"path":[[1,1],[1,2],[0,2],[0,3],[1,3]]}]},{"id":"1-4","stage":1,"no":4,"name":"구름다리","cols":3,"rows":4,"pairs":[{"color":"red","a":[1,0],"b":[0,1],"path":[[1,0],[0,0],[0,1]]},{"color":"blue","a":[2,0],"b":[1,1],"path":[[2,0],[2,1],[1,1]]},{"color":"yellow","a":[0,2],"b":[2,3],"path":[[0,2],[0,3],[1,3],[1,2],[2,2],[2,3]]}]},{"id":"2-1","stage":2,"no":1,"name":"지그재그","cols":4,"rows":5,"pairs":[{"color":"red","a":[1,1],"b":[2,2],"path":[[1,1],[1,0],[0,0],[0,1],[0,2],[1,2],[2,2]]},{"color":"blue","a":[2,1],"b":[3,1],"path":[[2,1],[2,0],[3,0],[3,1]]},{"color":"yellow","a":[3,2],"b":[2,3],"path":[[3,2],[3,3],[2,3]]},{"color":"green","a":[1,3],"b":[3,4],"path":[[1,3],[0,3],[0,4],[1,4],[2,4],[3,4]]}]},{"id":"2-2","stage":2,"no":2,"name":"네 갈래","cols":4,"rows":5,"pairs":[{"color":"red","a":[0,0],"b":[3,2],"path":[[0,0],[1,0],[2,0],[3,0],[3,1],[3,2]]},{"color":"blue","a":[2,1],"b":[1,2],"path":[[2,1],[1,1],[0,1],[0,2],[1,2]]},{"color":"yellow","a":[2,2],"b":[3,3],"path":[[2,2],[2,3],[2,4],[3,4],[3,3]]},{"color":"green","a":[0,3],"b":[0,4],"path":[[0,3],[1,3],[1,4],[0,4]]}]},{"id":"2-3","stage":2,"no":3,"name":"숲길","cols":4,"rows":5,"pairs":[{"color":"red","a":[2,0],"b":[1,2],"path":[[2,0],[2,1],[1,1],[1,0],[0,0],[0,1],[0,2],[1,2]]},{"color":"blue","a":[3,0],"b":[3,2],"path":[[3,0],[3,1],[3,2]]},{"color":"yellow","a":[2,2],"b":[2,4],"path":[[2,2],[2,3],[3,3],[3,4],[2,4]]},{"color":"green","a":[0,3],"b":[1,3],"path":[[0,3],[0,4],[1,4],[1,3]]}]},{"id":"2-4","stage":2,"no":4,"name":"나비날개","cols":4,"rows":5,"pairs":[{"color":"red","a":[1,0],"b":[1,4],"path":[[1,0],[0,0],[0,1],[0,2],[0,3],[0,4],[1,4]]},{"color":"blue","a":[2,0],"b":[1,1],"path":[[2,0],[3,0],[3,1],[2,1],[1,1]]},{"color":"yellow","a":[3,2],"b":[1,3],"path":[[3,2],[2,2],[1,2],[1,3]]},{"color":"green","a":[2,3],"b":[2,4],"path":[[2,3],[3,3],[3,4],[2,4]]}]},{"id":"3-1","stage":3,"no":1,"name":"미로 시작","cols":5,"rows":6,"pairs":[{"color":"red","a":[2,0],"b":[0,1],"path":[[2,0],[1,0],[0,0],[0,1]]},{"color":"blue","a":[4,1],"b":[4,3],"path":[[4,1],[4,0],[3,0],[3,1],[3,2],[4,2],[4,3]]},{"color":"yellow","a":[2,2],"b":[3,3],"path":[[2,2],[2,1],[1,1],[1,2],[0,2],[0,3],[1,3],[2,3],[3,3]]},{"color":"green","a":[0,4],"b":[2,4],"path":[[0,4],[0,5],[1,5],[1,4],[2,4]]},{"color":"pink","a":[3,4],"b":[2,5],"path":[[3,4],[4,4],[4,5],[3,5],[2,5]]}]},{"id":"3-2","stage":3,"no":2,"name":"다섯 빛","cols":5,"rows":6,"pairs":[{"color":"red","a":[0,0],"b":[3,1],"path":[[0,0],[1,0],[2,0],[2,1],[3,1]]},{"color":"blue","a":[3,0],"b":[4,3],"path":[[3,0],[4,0],[4,1],[4,2],[3,2],[3,3],[4,3]]},{"color":"yellow","a":[1,3],"b":[2,3],"path":[[1,3],[0,3],[0,2],[0,1],[1,1],[1,2],[2,2],[2,3]]},{"color":"green","a":[1,4],"b":[1,5],"path":[[1,4],[0,4],[0,5],[1,5]]},{"color":"pink","a":[2,4],"b":[3,4],"path":[[2,4],[2,5],[3,5],[4,5],[4,4],[3,4]]}]},{"id":"3-3","stage":3,"no":3,"name":"물레방아","cols":5,"rows":6,"pairs":[{"color":"red","a":[1,0],"b":[1,1],"path":[[1,0],[0,0],[0,1],[1,1]]},{"color":"blue","a":[3,1],"b":[4,1],"path":[[3,1],[2,1],[2,0],[3,0],[4,0],[4,1]]},{"color":"yellow","a":[0,3],"b":[2,3],"path":[[0,3],[0,2],[1,2],[2,2],[3,2],[4,2],[4,3],[3,3],[2,3]]},{"color":"green","a":[1,3],"b":[0,5],"path":[[1,3],[1,4],[0,4],[0,5]]},{"color":"pink","a":[1,5],"b":[3,5],"path":[[1,5],[2,5],[2,4],[3,4],[4,4],[4,5],[3,5]]}]},{"id":"3-4","stage":3,"no":4,"name":"별자리","cols":5,"rows":6,"pairs":[{"color":"red","a":[1,2],"b":[0,3],"path":[[1,2],[1,1],[1,0],[0,0],[0,1],[0,2],[0,3]]},{"color":"blue","a":[3,0],"b":[3,2],"path":[[3,0],[2,0],[2,1],[3,1],[3,2]]},{"color":"yellow","a":[4,0],"b":[3,5],"path":[[4,0],[4,1],[4,2],[4,3],[4,4],[4,5],[3,5]]},{"color":"green","a":[2,2],"b":[3,4],"path":[[2,2],[2,3],[3,3],[3,4]]},{"color":"pink","a":[1,3],"b":[2,4],"path":[[1,3],[1,4],[0,4],[0,5],[1,5],[2,5],[2,4]]}]},{"id":"4-1","stage":4,"no":1,"name":"여섯 갈래","cols":6,"rows":7,"pairs":[{"color":"red","a":[0,0],"b":[0,1],"path":[[0,0],[1,0],[2,0],[2,1],[1,1],[0,1]]},{"color":"blue","a":[4,0],"b":[3,4],"path":[[4,0],[3,0],[3,1],[3,2],[2,2],[2,3],[3,3],[4,3],[5,3],[5,4],[5,5],[4,5],[4,4],[3,4]]},{"color":"yellow","a":[5,0],"b":[4,1],"path":[[5,0],[5,1],[5,2],[4,2],[4,1]]},{"color":"green","a":[1,3],"b":[5,6],"path":[[1,3],[1,2],[0,2],[0,3],[0,4],[1,4],[2,4],[2,5],[3,5],[3,6],[4,6],[5,6]]},{"color":"pink","a":[1,5],"b":[2,6],"path":[[1,5],[0,5],[0,6],[1,6],[2,6]]}]},{"id":"4-2","stage":4,"no":2,"name":"구불구불","cols":6,"rows":7,"pairs":[{"color":"red","a":[0,0],"b":[1,5],"path":[[0,0],[0,1],[1,1],[2,1],[2,2],[2,3],[2,4],[2,5],[1,5]]},{"color":"blue","a":[1,0],"b":[3,2],"path":[[1,0],[2,0],[3,0],[3,1],[3,2]]},{"color":"yellow","a":[5,1],"b":[4,5],"path":[[5,1],[5,0],[4,0],[4,1],[4,2],[5,2],[5,3],[5,4],[5,5],[5,6],[4,6],[4,5]]},{"color":"green","a":[1,2],"b":[0,5],"path":[[1,2],[0,2],[0,3],[1,3],[1,4],[0,4],[0,5]]},{"color":"pink","a":[4,3],"b":[4,4],"path":[[4,3],[3,3],[3,4],[4,4]]},{"color":"purple","a":[3,5],"b":[0,6],"path":[[3,5],[3,6],[2,6],[1,6],[0,6]]}]},{"id":"4-3","stage":4,"no":3,"name":"산책로","cols":6,"rows":7,"pairs":[{"color":"red","a":[0,0],"b":[4,1],"path":[[0,0],[0,1],[0,2],[1,2],[2,2],[3,2],[4,2],[4,1]]},{"color":"blue","a":[2,0],"b":[5,1],"path":[[2,0],[1,0],[1,1],[2,1],[3,1],[3,0],[4,0],[5,0],[5,1]]},{"color":"yellow","a":[5,2],"b":[5,6],"path":[[5,2],[5,3],[5,4],[4,4],[4,3],[3,3],[3,4],[3,5],[4,5],[5,5],[5,6]]},{"color":"green","a":[1,4],"b":[2,5],"path":[[1,4],[0,4],[0,3],[1,3],[2,3],[2,4],[2,5]]},{"color":"pink","a":[1,5],"b":[4,6],"path":[[1,5],[0,5],[0,6],[1,6],[2,6],[3,6],[4,6]]}]},{"id":"4-4","stage":4,"no":4,"name":"무지개","cols":6,"rows":7,"pairs":[{"color":"red","a":[3,0],"b":[0,2],"path":[[3,0],[2,0],[1,0],[0,0],[0,1],[1,1],[2,1],[2,2],[1,2],[0,2]]},{"color":"blue","a":[4,0],"b":[4,2],"path":[[4,0],[5,0],[5,1],[5,2],[5,3],[4,3],[4,2]]},{"color":"yellow","a":[4,1],"b":[1,3],"path":[[4,1],[3,1],[3,2],[3,3],[2,3],[1,3]]},{"color":"green","a":[0,3],"b":[1,4],"path":[[0,3],[0,4],[0,5],[0,6],[1,6],[2,6],[2,5],[1,5],[1,4]]},{"color":"pink","a":[2,4],"b":[5,6],"path":[[2,4],[3,4],[3,5],[3,6],[4,6],[5,6]]},{"color":"purple","a":[4,4],"b":[5,4],"path":[[4,4],[4,5],[5,5],[5,4]]}]},{"id":"5-1","stage":5,"no":1,"name":"일곱 빛","cols":7,"rows":8,"pairs":[{"color":"red","a":[1,0],"b":[1,3],"path":[[1,0],[0,0],[0,1],[1,1],[1,2],[1,3]]},{"color":"blue","a":[2,2],"b":[4,3],"path":[[2,2],[2,1],[2,0],[3,0],[3,1],[3,2],[4,2],[4,3]]},{"color":"yellow","a":[6,0],"b":[6,5],"path":[[6,0],[5,0],[4,0],[4,1],[5,1],[6,1],[6,2],[6,3],[6,4],[6,5]]},{"color":"green","a":[0,2],"b":[2,5],"path":[[0,2],[0,3],[0,4],[1,4],[1,5],[0,5],[0,6],[1,6],[2,6],[2,5]]},{"color":"pink","a":[5,2],"b":[5,5],"path":[[5,2],[5,3],[5,4],[4,4],[4,5],[5,5]]},{"color":"purple","a":[3,3],"b":[0,7],"path":[[3,3],[2,3],[2,4],[3,4],[3,5],[3,6],[4,6],[5,6],[6,6],[6,7],[5,7],[4,7],[3,7],[2,7],[1,7],[0,7]]}]},{"id":"5-2","stage":5,"no":2,"name":"미로 왕","cols":7,"rows":8,"pairs":[{"color":"red","a":[0,0],"b":[6,0],"path":[[0,0],[1,0],[2,0],[2,1],[3,1],[3,0],[4,0],[5,0],[6,0]]},{"color":"blue","a":[1,3],"b":[5,4],"path":[[1,3],[0,3],[0,2],[0,1],[1,1],[1,2],[2,2],[3,2],[4,2],[4,3],[4,4],[5,4]]},{"color":"yellow","a":[4,1],"b":[6,4],"path":[[4,1],[5,1],[6,1],[6,2],[5,2],[5,3],[6,3],[6,4]]},{"color":"green","a":[2,3],"b":[3,3],"path":[[2,3],[2,4],[3,4],[3,3]]},{"color":"pink","a":[1,4],"b":[0,7],"path":[[1,4],[0,4],[0,5],[0,6],[0,7]]},{"color":"purple","a":[1,5],"b":[5,6],"path":[[1,5],[1,6],[1,7],[2,7],[3,7],[4,7],[5,7],[6,7],[6,6],[6,5],[5,5],[5,6]]},{"color":"orange","a":[2,5],"b":[4,6],"path":[[2,5],[2,6],[3,6],[3,5],[4,5],[4,6]]}]},{"id":"5-3","stage":5,"no":3,"name":"구름 미로","cols":7,"rows":8,"pairs":[{"color":"red","a":[0,0],"b":[5,1],"path":[[0,0],[1,0],[2,0],[3,0],[3,1],[4,1],[5,1]]},{"color":"blue","a":[4,0],"b":[6,1],"path":[[4,0],[5,0],[6,0],[6,1]]},{"color":"yellow","a":[2,1],"b":[0,6],"path":[[2,1],[2,2],[1,2],[1,1],[0,1],[0,2],[0,3],[1,3],[1,4],[0,4],[0,5],[1,5],[2,5],[2,6],[1,6],[0,6]]},{"color":"green","a":[6,2],"b":[2,4],"path":[[6,2],[5,2],[4,2],[3,2],[3,3],[2,3],[2,4]]},{"color":"pink","a":[6,3],"b":[5,6],"path":[[6,3],[6,4],[5,4],[5,3],[4,3],[4,4],[3,4],[3,5],[3,6],[4,6],[4,5],[5,5],[5,6]]},{"color":"purple","a":[6,5],"b":[0,7],"path":[[6,5],[6,6],[6,7],[5,7],[4,7],[3,7],[2,7],[1,7],[0,7]]}]},{"id":"5-4","stage":5,"no":4,"name":"대미로","cols":7,"rows":8,"pairs":[{"color":"red","a":[0,0],"b":[1,3],"path":[[0,0],[0,1],[0,2],[0,3],[1,3]]},{"color":"blue","a":[1,2],"b":[6,2],"path":[[1,2],[1,1],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[6,1],[5,1],[5,2],[6,2]]},{"color":"yellow","a":[4,1],"b":[6,5],"path":[[4,1],[4,2],[3,2],[3,1],[2,1],[2,2],[2,3],[3,3],[3,4],[3,5],[4,5],[5,5],[6,5]]},{"color":"green","a":[4,4],"b":[5,4],"path":[[4,4],[4,3],[5,3],[6,3],[6,4],[5,4]]},{"color":"pink","a":[1,4],"b":[1,5],"path":[[1,4],[0,4],[0,5],[1,5]]},{"color":"purple","a":[2,4],"b":[3,6],"path":[[2,4],[2,5],[2,6],[3,6]]},{"color":"orange","a":[1,6],"b":[4,6],"path":[[1,6],[0,6],[0,7],[1,7],[2,7],[3,7],[4,7],[5,7],[6,7],[6,6],[5,6],[4,6]]}]}];
+
+(function () {
+  'use strict';
+
+  var ADVANCE_MS = 500;          /* 완성! 이 보이고 다음 문제로 넘어가기까지 */
+  var TAU = Math.PI * 2;
+  var STEP_LIMIT = 8;            /* 한 번의 손가락 이동에서 최대 칸 수 */
+  var UNDO_LIMIT = 80;
+
+  var COLORS = {
+    red:    { hex: '#e5332e', deep: '#a71f1b', name: '빨강' },
+    blue:   { hex: '#2a6fd6', deep: '#1a4a95', name: '파랑' },
+    yellow: { hex: '#f0b400', deep: '#a97c00', name: '노랑' },
+    green:  { hex: '#12a05c', deep: '#0a6f3f', name: '초록' },
+    pink:   { hex: '#e7559f', deep: '#a92c6c', name: '분홍' },
+    purple: { hex: '#7c4be0', deep: '#5630a6', name: '보라' },
+    orange: { hex: '#ef7a18', deep: '#b0530a', name: '주황' }
+  };
+
+  var STAGES = [
+    { n: 1, label: '1단계', size: '3×4' },
+    { n: 2, label: '2단계', size: '4×5' },
+    { n: 3, label: '3단계', size: '5×6' },
+    { n: 4, label: '4단계', size: '6×7' },
+    { n: 5, label: '5단계', size: '7×8' }
+  ];
+
+  var cv = null, ctx = null;
+  var view = { cell: 0, dpr: 1, w: 0, h: 0 };
+  var st = {
+    stage: 1, no: 1,
+    paths: {},          /* 색 번호 -> 칸 번호 배열 */
+    own: [],            /* 칸 번호 -> 그 칸을 가진 색 (-1 이면 빈칸) */
+    stroke: null,       /* 그리는 중인 색 {color, done} */
+    complete: false,
+    hintColor: -1,
+    blanks: [],
+    connected: 0,
+    undoStack: [],
+    advanceTimer: null,
+    toastTimer: null,
+    justConnected: -1
+  };
+  /* 공용 태블릿: 화면에만 ✓ 를 남기고, 새로 열면 아무것도 없다. */
+  var doneMap = {};
+  var sndOn = true;
+
+  function $(id) { return document.getElementById(id); }
+
+  /* ------------------------------------------------------------- 퍼즐 준비 */
+  function puzzlesOf(stage) {
+    var out = [], i;
+    for (i = 0; i < PUZZLES.length; i++) { if (PUZZLES[i].stage === stage) { out.push(PUZZLES[i]); } }
+    return out;
+  }
+
+  function byNo(stage, no) {
+    var list = puzzlesOf(stage), i;
+    for (i = 0; i < list.length; i++) { if (list[i].no === no) { return prep(list[i]); } }
+    return list.length ? prep(list[0]) : null;
+  }
+
+  function prep(pz) {
+    if (pz._ready) { return pz; }
+    var i, j, k;
+    pz._n = pz.cols * pz.rows;
+    pz._sol = [];
+    pz._dot = [];
+    pz._colors = [];
+    pz._name = [];
+    for (i = 0; i < pz.pairs.length; i++) {
+      var pr = pz.pairs[i];
+      var col = COLORS[pr.color] || COLORS.red;
+      pz._colors.push(col);
+      pz._name.push(col.name);
+      var a = pr.a[1] * pz.cols + pr.a[0];
+      var b = pr.b[1] * pz.cols + pr.b[0];
+      pz._dot.push([a, b]);
+      var sol = [];
+      for (j = 0; j < pr.path.length; j++) { sol.push(pr.path[j][1] * pz.cols + pr.path[j][0]); }
+      pz._sol.push(sol);
+    }
+    pz._ready = true;
+    return pz;
+  }
+
+  function cur() { return byNo(st.stage, st.no); }
+
+  /* ---------------------------------------------------------------- 상태 */
+  function recalc() {
+    var pz = cur(), n = pz._n, i, k;
+    var own = new Array(n);
+    for (i = 0; i < n; i++) { own[i] = -1; }
+    for (i = 0; i < pz.pairs.length; i++) {
+      own[pz._dot[i][0]] = i;
+      own[pz._dot[i][1]] = i;
+    }
+    for (i = 0; i < pz.pairs.length; i++) {
+      var p = st.paths[i];
+      if (!p) { continue; }
+      for (k = 0; k < p.length; k++) { own[p[k]] = i; }
+    }
+    st.own = own;
+
+    /* 빈칸 = 아직 어떤 색 선도 지나가지 않은 칸. 점이 찍혀 있어도 선이 없으면
+       아직 채워야 할 칸이라서 빈칸으로 센다. */
+    var filled = new Array(n);
+    for (i = 0; i < n; i++) { filled[i] = false; }
+    for (i = 0; i < pz.pairs.length; i++) {
+      var q = st.paths[i];
+      if (!q) { continue; }
+      for (k = 0; k < q.length; k++) { filled[q[k]] = true; }
+    }
+    var blanks = [], connected = 0;
+    for (i = 0; i < n; i++) { if (!filled[i]) { blanks.push(i); } }
+    for (i = 0; i < pz.pairs.length; i++) { if (isConnected(i)) { connected += 1; } }
+    st.blanks = blanks;
+    st.connected = connected;
+
+    var was = st.complete;
+    st.complete = (connected === pz.pairs.length) && blanks.length === 0;
+    if (st.complete && !was) { onSolved(); }
+    if (!st.complete && was) { cancelAdvance(); }
+    return st;
+  }
+
+  function isConnected(i) {
+    var pz = cur(), p = st.paths[i];
+    if (!p || p.length < 2) { return false; }
+    var a = pz._dot[i][0], b = pz._dot[i][1];
+    return (p[0] === a && p[p.length - 1] === b) || (p[0] === b && p[p.length - 1] === a);
+  }
+
+  function otherDot(i, cell) {
+    var pz = cur(), d = pz._dot[i];
+    return cell === d[0] ? d[1] : (cell === d[1] ? d[0] : -1);
+  }
+
+  function pathColorAt(cell) {
+    var i;
+    for (i = 0; i < cur().pairs.length; i++) {
+      if (st.paths[i] && st.paths[i].indexOf(cell) >= 0) { return i; }
+    }
+    return -1;
+  }
+
+  /* -------------------------------------------------------------- 되돌리기 */
+  function snapshot() {
+    var out = [], i;
+    for (i = 0; i < 7; i++) { out.push(st.paths[i] ? st.paths[i].join(',') : ''); }
+    return out.join('|');
+  }
+
+  function pushUndo() {
+    var snap = snapshot();
+    if (st.undoStack.length && st.undoStack[st.undoStack.length - 1] === snap) { return; }
+    st.undoStack.push(snap);
+    if (st.undoStack.length > UNDO_LIMIT) { st.undoStack.shift(); }
+  }
+
+  function restore(snap) {
+    var parts = snap.split('|'), i;
+    st.paths = {};
+    for (i = 0; i < parts.length; i++) {
+      if (!parts[i]) { continue; }
+      st.paths[i] = parts[i].split(',').map(Number);
+    }
+    st.hintColor = -1;
+    st.stroke = null;
+    st.justConnected = -1;
+    afterChange();
+  }
+
+  function undo() {
+    if (!st.undoStack.length) { return false; }
+    cancelAdvance();
+    restore(st.undoStack.pop());
+    beep(560, 0, 0.06, 0.04);
+    return true;
+  }
+
+  function resetBoard() {
+    cancelAdvance();
+    pushUndo();
+    st.paths = {};
+    st.stroke = null;
+    st.hintColor = -1;
+    st.justConnected = -1;
+    st.hintCleared = 0;
+    afterChange();
+    return true;
+  }
+
+  /* ------------------------------------------------------------- 선 긋기 */
+  function neighboursOf(cell, cols, rows, out) {
+    out.length = 0;
+    var c = cell % cols, r = (cell - c) / cols;
+    if (c > 0) { out.push(cell - 1); }
+    if (c < cols - 1) { out.push(cell + 1); }
+    if (r > 0) { out.push(cell - cols); }
+    if (r < rows - 1) { out.push(cell + cols); }
+    return out;
+  }
+
+  function adjacent(a, b) {
+    var pz = cur();
+    var ac = a % pz.cols, ar = (a - ac) / pz.cols;
+    var bc = b % pz.cols, br = (b - bc) / pz.cols;
+    return Math.abs(ac - bc) + Math.abs(ar - br) === 1;
+  }
+
+  function startAt(cell) {
+    var pz = cur();
+    var c = cell % pz.cols, r = (cell - c) / pz.cols;
+    var owner = st.own[cell];
+    if (owner < 0) {
+      st.stroke = null;
+      return false;
+    }
+    var d = pz._dot[owner];
+    pushUndo();
+    st.hintColor = -1;
+    st.justConnected = -1;
+    st.hintCleared = 0;
+    if (cell === d[0] || cell === d[1]) {
+      st.paths[owner] = [cell];
+    } else {
+      var k = st.paths[owner].indexOf(cell);
+      if (k < 0) { st.stroke = null; return false; }
+      st.paths[owner] = st.paths[owner].slice(0, k + 1);
+    }
+    st.stroke = { color: owner, done: false };
+    afterChange();
+    beep(620, 0, 0.05, 0.035);
+    return true;
+  }
+
+  function enter(cell) {
+    var pz = cur(), i = st.stroke.color, p = st.paths[i];
+    var owner = st.own[cell];
+    if (owner !== -1 && owner !== i) {
+      blocked();
+      return false;
+    }
+    if (owner === i) {
+      if (cell === otherDot(i, p[0])) {
+        p.push(cell);
+        st.stroke.done = true;
+        st.justConnected = i;
+        afterChange();
+        beep(880, 0, 0.09, 0.06);
+        return true;
+      }
+      return false;
+    }
+    p.push(cell);
+    if (cell === otherDot(i, p[0])) {
+      st.stroke.done = true;
+      st.justConnected = i;
+      beep(880, 0, 0.09, 0.06);
+    }
+    afterChange();
+    return true;
+  }
+
+  function rewindTo(pos) {
+    var i = st.stroke.color, p = st.paths[i];
+    p.length = pos + 1;
+    st.stroke.done = false;
+    afterChange();
+  }
+
+  /* 손가락이 지나간 칸으로 한 칸씩 따라간다. 빠르게 끌면 몇 칸을 건너뛰므로
+     같은 줄/칸에서 사이 칸을 채워 준다. */
+  function driveTo(cell) {
+    if (!st.stroke) { return false; }
+    var pz = cur(), i = st.stroke.color, p = st.paths[i];
+    var pos = p.indexOf(cell);
+    if (pos >= 0) {
+      if (pos < p.length - 1) { rewindTo(pos); return true; }
+      return false;
+    }
+    var guard = 0, moved = false;
+    while (guard++ < STEP_LIMIT) {
+      var head = p[p.length - 1];
+      if (adjacent(head, cell)) {
+        if (st.stroke.done) { return moved; }
+        return enter(cell) || moved;
+      }
+      if (st.stroke.done) { return moved; }
+      var hc = head % pz.cols, hr = (head - hc) / pz.cols;
+      var tc = cell % pz.cols, tr = (cell - tc) / pz.cols;
+      var dc = tc - hc, dr = tr - hr;
+      var next;
+      if (Math.abs(dc) >= Math.abs(dr)) { next = head + (dc > 0 ? 1 : -1); }
+      else { next = head + (dr > 0 ? pz.cols : -pz.cols); }
+      if (next === head) { return moved; }
+      if (!enter(next)) { return moved; }
+      moved = true;
+    }
+    return moved;
+  }
+
+  function endStroke() {
+    var changed = false;
+    if (st.stroke) {
+      var p = st.paths[st.stroke.color];
+      if (p && p.length === 1) {
+        /* 한 칸만 찍고 손을 뗐다: 점만 남기고 선은 지운다 */
+        st.paths[st.stroke.color] = [];
+        changed = true;
+      }
+      st.stroke = null;
+    }
+    if (changed) { afterChange(); }
+    return true;
+  }
+
+  function pointerDown(cell) {
+    cancelAdvance();
+    return startAt(cell);
+  }
+
+  function pointerMove(cell) {
+    if (!st.stroke) { return false; }
+    return driveTo(cell);
+  }
+
+  /* -------------------------------------------------------------- 힌트 */
+  function showHint() {
+    var pz = cur(), i, k;
+    var target = -1;
+    for (i = 0; i < pz.pairs.length; i++) {
+      if (!isConnected(i)) { target = i; break; }
+    }
+    if (target < 0) {
+      toast('색은 다 이었어요. 빈칸을 채우려면 한 색을 다시 그려 보세요.');
+      return null;
+    }
+    cancelAdvance();
+    pushUndo();
+    var sol = pz._sol[target];
+    var inHint = {};
+    for (k = 0; k < sol.length; k++) { inHint[sol[k]] = true; }
+    var cleared = 0;
+    for (i = 0; i < pz.pairs.length; i++) {
+      if (i === target) { continue; }
+      var p = st.paths[i];
+      if (!p || !p.length) { continue; }
+      for (k = 0; k < p.length; k++) {
+        if (inHint[p[k]]) { st.paths[i] = []; cleared += 1; break; }
+      }
+    }
+    st.paths[target] = sol.slice();
+    st.hintColor = target;
+    st.stroke = null;
+    afterChange();
+    beep(760, 0, 0.08, 0.05);
+    beep(1010, 0.08, 0.1, 0.045);
+    st.hintCleared = cleared;
+    updateSay();
+    return { color: target, cleared: cleared };
+  }
+
+  /* ------------------------------------------------------------ 완성/이동 */
+  function onSolved() {
+    doneMap[cur().id] = 1;
+    buildChips();
+    playWin();
+    scheduleAdvance();
+  }
+
+  function nextTarget() {
+    var pz = cur(), list = puzzlesOf(st.stage), i;
+    for (i = 0; i < list.length; i++) {
+      if (list[i].no === pz.no + 1) { return { stage: st.stage, no: list[i].no }; }
+    }
+    var later = puzzlesOf(st.stage + 1);
+    if (later.length) { return { stage: st.stage + 1, no: later[0].no }; }
+    return null;
+  }
+
+  function cancelAdvance() {
+    if (st.advanceTimer !== null) { clearTimeout(st.advanceTimer); st.advanceTimer = null; }
+  }
+
+  function scheduleAdvance() {
+    cancelAdvance();
+    if (!nextTarget()) { return; }
+    var fromId = cur().id;
+    st.advanceTimer = setTimeout(function () {
+      st.advanceTimer = null;
+      if (!st.complete || cur().id !== fromId) { return; }
+      var t = nextTarget();
+      if (!t) { return; }
+      select(t.stage, t.no);
+    }, ADVANCE_MS);
+  }
+
+  function clearBoard() {
+    st.paths = {};
+    st.stroke = null;
+    st.hintColor = -1;
+    st.blanks = [];
+    st.connected = 0;
+    st.complete = false;
+    st.undoStack = [];
+    st.justConnected = -1;
+    st.hintCleared = 0;
+    cancelAdvance();
+  }
+
+  function select(stage, no) {
+    var list = puzzlesOf(stage);
+    if (!list.length) { return; }
+    var ok = false, i;
+    for (i = 0; i < list.length; i++) { if (list[i].no === no) { ok = true; } }
+    if (!ok) { no = list[0].no; }
+    clearBoard();
+    st.stage = stage;
+    st.no = no;
+    buildChips();
+    afterChange();
+  }
+
+  function step(delta) {
+    var list = puzzlesOf(st.stage), i, pos = 0;
+    for (i = 0; i < list.length; i++) { if (list[i].no === st.no) { pos = i; } }
+    pos += delta;
+    if (pos < 0) {
+      if (st.stage > 1) { var prev = puzzlesOf(st.stage - 1); select(st.stage - 1, prev[prev.length - 1].no); }
+      return;
+    }
+    if (pos >= list.length) {
+      if (st.stage < 5) { select(st.stage + 1, 1); }
+      return;
+    }
+    select(st.stage, list[pos].no);
+  }
+
+  function afterChange() {
+    recalc();
+    render();
+    updateSay();
+    updateButtons();
+  }
+
+  /* ---------------------------------------------------------------- 그리기 */
+  function fitBoard() {
+    if (!cv) { return; }
+    var wrap = $('boardWrap'), pz = cur();
+    var w = wrap.clientWidth || 320;
+    var h = wrap.clientHeight || 320;
+    var cell = Math.floor(Math.min((w - 2) / pz.cols, (h - 2) / pz.rows));
+    cell = Math.max(18, Math.min(cell, 92));
+    var bw = cell * pz.cols, bh = cell * pz.rows;
+    var dpr = Math.min(2.5, Math.max(1, window.devicePixelRatio || 1));
+    view.cell = cell; view.dpr = dpr; view.w = bw; view.h = bh;
+    cv.style.width = bw + 'px';
+    cv.style.height = bh + 'px';
+    if (cv.width !== Math.round(bw * dpr) || cv.height !== Math.round(bh * dpr)) {
+      cv.width = Math.round(bw * dpr);
+      cv.height = Math.round(bh * dpr);
+    }
+    if (ctx) { ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function render() {
+    if (!ctx || !view.cell) { return; }
+    var pz = cur(), cs = view.cell, W = view.w, H = view.h;
+    var i, k;
+    ctx.clearRect(0, 0, W, H);
+
+    /* 판 바탕 */
+    roundRect(0.5, 0.5, W - 1, H - 1, 16);
+    ctx.fillStyle = '#fffdf4';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#dff0e4';
+    ctx.stroke();
+
+    /* 칸 눈금 */
+    ctx.strokeStyle = 'rgba(47,180,138,.16)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (i = 1; i < pz.cols; i++) {
+      var gx = Math.round(i * cs) + 0.5;
+      ctx.moveTo(gx, 6); ctx.lineTo(gx, H - 6);
+    }
+    for (i = 1; i < pz.rows; i++) {
+      var gy = Math.round(i * cs) + 0.5;
+      ctx.moveTo(6, gy); ctx.lineTo(W - 6, gy);
+    }
+    ctx.stroke();
+
+    /* 빈칸 표시: 색은 다 이었는데 칸이 남았을 때만 */
+    if (st.connected === pz.pairs.length && st.blanks.length) {
+      var pulse = 0.34 + 0.16 * Math.sin(Date.now() / 260);
+      ctx.fillStyle = 'rgba(247,178,48,' + pulse.toFixed(3) + ')';
+      for (k = 0; k < st.blanks.length; k++) {
+        var bc = st.blanks[k] % pz.cols, br = (st.blanks[k] - bc) / pz.cols;
+        roundRect(bc * cs + 2, br * cs + 2, cs - 4, cs - 4, Math.min(10, cs * 0.22));
+        ctx.fill();
+      }
+    }
+
+    /* 길: 흰 테두리를 먼저 깔고 색을 올린다 */
+    var lw = cs * 0.46;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (i = 0; i < pz.pairs.length; i++) {
+      var p = st.paths[i];
+      if (!p || p.length < 2) { continue; }
+      var pts = [];
+      for (k = 0; k < p.length; k++) {
+        var c0 = p[k] % pz.cols, r0 = (p[k] - c0) / pz.cols;
+        pts.push([(c0 + 0.5) * cs, (r0 + 0.5) * cs]);
+      }
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (k = 1; k < pts.length; k++) { ctx.lineTo(pts[k][0], pts[k][1]); }
+      ctx.lineWidth = lw + Math.max(3, cs * 0.09);
+      ctx.strokeStyle = 'rgba(255,255,255,.92)';
+      ctx.stroke();
+      ctx.lineWidth = lw;
+      ctx.strokeStyle = pz._colors[i].hex;
+      ctx.stroke();
+      /* 살짝 위쪽 하이라이트 */
+      ctx.lineWidth = Math.max(1.4, lw * 0.22);
+      ctx.strokeStyle = 'rgba(255,255,255,.34)';
+      ctx.stroke();
+    }
+
+    /* 힌트: 방금 그려 준 길을 따라 흐르는 점선 */
+    if (st.hintColor >= 0 && st.paths[st.hintColor] && st.paths[st.hintColor].length > 1) {
+      var hp = st.paths[st.hintColor];
+      ctx.save();
+      ctx.setLineDash([Math.max(4, cs * 0.16), Math.max(4, cs * 0.14)]);
+      ctx.lineDashOffset = -((Date.now() / 26) % 1000);
+      ctx.lineWidth = Math.max(2, cs * 0.07);
+      ctx.strokeStyle = 'rgba(255,255,255,.95)';
+      ctx.beginPath();
+      for (k = 0; k < hp.length; k++) {
+        var hc0 = hp[k] % pz.cols, hr0 = (hp[k] - hc0) / pz.cols;
+        var hx = (hc0 + 0.5) * cs, hy = (hr0 + 0.5) * cs;
+        if (k === 0) { ctx.moveTo(hx, hy); } else { ctx.lineTo(hx, hy); }
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* 점 */
+    for (i = 0; i < pz.pairs.length; i++) {
+      var col = pz._colors[i];
+      for (k = 0; k < 2; k++) {
+        var d = pz._dot[i][k];
+        var dc = d % pz.cols, dr = (d - dc) / pz.cols;
+        var x = (dc + 0.5) * cs, y = (dr + 0.5) * cs;
+        var rr = cs * 0.29;
+        ctx.beginPath();
+        ctx.arc(x, y, rr + Math.max(2, cs * 0.05), 0, TAU);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, y, rr, 0, TAU);
+        ctx.fillStyle = col.hex;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, y, rr * 0.58, 0, TAU);
+        ctx.strokeStyle = 'rgba(255,255,255,.55)';
+        ctx.lineWidth = Math.max(1.4, rr * 0.3);
+        ctx.stroke();
+        if (isConnected(i)) {
+          ctx.beginPath();
+          ctx.arc(x, y, rr + Math.max(3, cs * 0.075), 0, TAU);
+          ctx.strokeStyle = col.hex;
+          ctx.lineWidth = Math.max(1.6, cs * 0.045);
+          ctx.stroke();
+        }
+      }
+    }
+
+    /* 지금 짚고 있는 칸 */
+    if (st.stroke) {
+      var pp = st.paths[st.stroke.color];
+      if (pp && pp.length) {
+        var hcell = pp[pp.length - 1];
+        var hcc = hcell % pz.cols, hrr = (hcell - hcc) / pz.cols;
+        ctx.beginPath();
+        ctx.arc((hcc + 0.5) * cs, (hrr + 0.5) * cs, cs * 0.40, 0, TAU);
+        ctx.strokeStyle = 'rgba(39,70,61,.32)';
+        ctx.lineWidth = Math.max(2, cs * 0.05);
+        ctx.stroke();
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------------- 글자 */
+  function updateSay() {
+    var pz = cur(), el = $('say');
+    var cls = '';
+    var text;
+    if (st.complete) {
+      text = '완성! 모든 칸을 채웠어요 🎉';
+      cls = 'ok';
+    } else if (st.connected === pz.pairs.length) {
+      text = '색은 다 이었는데 빈칸 ' + st.blanks.length + '칸이 남았어요! 빈칸 없이 채워 주세요';
+      cls = 'warn';
+    } else if (st.hintColor >= 0) {
+      text = pz._name[st.hintColor] + ' 힌트를 그렸어요' + (st.hintCleared ? ' · 겹치던 선 ' + st.hintCleared + '개는 지웠어요' : '');
+      cls = 'ok';
+    } else if (st.stroke) {
+      text = pz._name[st.stroke.color] + ' 잇는 중 · 남은 색 ' + (pz.pairs.length - st.connected) + '개';
+    } else if (st.justConnected >= 0) {
+      text = pz._name[st.justConnected] + ' 완성! 남은 색 ' + (pz.pairs.length - st.connected) + '개 · 빈칸 ' + st.blanks.length + '칸';
+      cls = 'ok';
+    } else {
+      text = '남은 색 ' + (pz.pairs.length - st.connected) + '개 · 빈칸 ' + st.blanks.length + '칸';
+    }
+    el.className = 'say' + (cls ? ' ' + cls : '');
+    el.textContent = text;
+  }
+
+  function updateButtons() {
+    $('btnUndo').disabled = st.undoStack.length === 0;
+  }
+
+  function updateHead() {
+    var pz = cur();
+    $('pzTitle').textContent = pz.id + ' ' + pz.name;
+    $('pzMeta').textContent = pz.cols + '×' + pz.rows + ' · ' + pz.no + ' / ' + puzzlesOf(st.stage).length;
+  }
+
+  /* ------------------------------------------------------------- 목록 그리기 */
+  function buildStages() {
+    var box = $('stages'), i;
+    box.innerHTML = '';
+    for (i = 0; i < STAGES.length; i++) {
+      var s = STAGES[i];
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'stage' + (s.n === st.stage ? ' on' : '');
+      b.setAttribute('data-stage', String(s.n));
+      b.setAttribute('aria-label', s.label + ' ' + s.size);
+      b.innerHTML = '<b>' + s.label + '</b><span>' + s.size + '</span>';
+      b.onclick = (function (n) { return function () { select(n, 1); }; })(s.n);
+      box.appendChild(b);
+    }
+  }
+
+  function buildChips() {
+    var box = $('chips'), i;
+    var list = puzzlesOf(st.stage);
+    box.innerHTML = '';
+    for (i = 0; i < list.length; i++) {
+      var p = list[i];
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip' + (p.no === st.no ? ' on' : '');
+      b.setAttribute('data-no', String(p.no));
+      b.setAttribute('aria-label', p.id + ' ' + p.name);
+      b.innerHTML = String(p.no) + (doneMap[p.id] ? '<span class="tk">✓</span>' : '');
+      b.onclick = (function (no) { return function () { select(st.stage, no); }; })(p.no);
+      box.appendChild(b);
+    }
+    var sb = $('stages').getElementsByTagName('button');
+    for (i = 0; i < sb.length; i++) {
+      sb[i].className = 'stage' + (Number(sb[i].getAttribute('data-stage')) === st.stage ? ' on' : '');
+    }
+    updateHead();
+  }
+
+  /* ---------------------------------------------------------------- 소리 */
+  var AC = null;
+  function ac() {
+    if (!sndOn) { return null; }
+    try {
+      if (!AC) {
+        var C = window.AudioContext || window.webkitAudioContext;
+        if (!C) { return null; }
+        AC = new C();
+      }
+      if (AC.state === 'suspended' && AC.resume) { AC.resume(); }
+      return AC;
+    } catch (e) { return null; }
+  }
+
+  function beep(freq, at, dur, vol, kind) {
+    var c = ac();
+    if (!c) { return; }
+    try {
+      var o = c.createOscillator(), g = c.createGain();
+      o.type = kind || 'sine';
+      o.frequency.value = freq;
+      o.connect(g);
+      g.connect(c.destination);
+      var t0 = c.currentTime + (at || 0);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol, t0 + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.start(t0);
+      o.stop(t0 + dur + 0.03);
+    } catch (e) {}
+  }
+
+  function playWin() {
+    beep(784, 0, 0.12, 0.08);
+    beep(988, 0.10, 0.12, 0.08);
+    beep(1175, 0.20, 0.13, 0.075);
+    beep(1568, 0.31, 0.22, 0.07);
+  }
+
+  function blocked() {
+    beep(196, 0, 0.13, 0.05, 'square');
+    toast('다른 색 선과 겹칠 수 없어요!');
+  }
+
+  function toast(msg) {
+    var el = $('toast');
+    el.textContent = msg;
+    el.hidden = false;
+    if (st.toastTimer) { clearTimeout(st.toastTimer); }
+    st.toastTimer = setTimeout(function () { el.hidden = true; st.toastTimer = null; }, 1500);
+  }
+
+  /* ------------------------------------------------------------ 입력 처리 */
+  function cellFromEvent(ev) {
+    var rect = cv.getBoundingClientRect();
+    var cs = view.cell || 1;
+    var c = Math.floor((ev.clientX - rect.left) / cs);
+    var r = Math.floor((ev.clientY - rect.top) / cs);
+    var pz = cur();
+    if (c < 0 || r < 0 || c >= pz.cols || r >= pz.rows) { return -1; }
+    return r * pz.cols + c;
+  }
+
+  var dragging = false, dragId = null;
+
+  function onDown(ev) {
+    if (ev.cancelable) { ev.preventDefault(); }
+    var cell = cellFromEvent(ev);
+    if (cell < 0) { return; }
+    dragging = true;
+    dragId = ev.pointerId;
+    if (cv.setPointerCapture) { try { cv.setPointerCapture(ev.pointerId); } catch (e) {} }
+    pointerDown(cell);
+  }
+
+  function onMove(ev) {
+    if (!dragging || ev.pointerId !== dragId) { return; }
+    if (ev.cancelable) { ev.preventDefault(); }
+    var cell = cellFromEvent(ev);
+    if (cell < 0) { return; }
+    pointerMove(cell);
+  }
+
+  function onUp(ev) {
+    if (ev.pointerId !== dragId) { return; }
+    dragging = false;
+    dragId = null;
+    endStroke();
+  }
+
+  /* ---------------------------------------------------------------- 시작 */
+  function init() {
+    cv = $('cv');
+    if (cv && cv.getContext) { ctx = cv.getContext('2d'); }
+    var i;
+    for (i = 0; i < PUZZLES.length; i++) { prep(PUZZLES[i]); }
+
+    buildStages();
+    buildChips();
+
+    $('prevBtn').onclick = function () { step(-1); };
+    $('nextBtn').onclick = function () { step(1); };
+    $('btnUndo').onclick = function () { undo(); };
+    $('btnReset').onclick = function () { resetBoard(); };
+    $('btnHint').onclick = function () { showHint(); };
+    $('sndBtn').onclick = function () {
+      sndOn = !sndOn;
+      $('sndIco').textContent = sndOn ? '🔊' : '🔇';
+      if (this.className.indexOf('off') < 0 && !sndOn) { this.className = 'off'; }
+      else if (sndOn) { this.className = ''; }
+      if (sndOn) { beep(660, 0, 0.07, 0.05); }
+    };
+    $('helpBtn').onclick = function () { $('helpMask').hidden = false; };
+    $('helpClose').onclick = function () { $('helpMask').hidden = true; };
+    $('helpMask').onclick = function (ev) { if (ev.target === this) { this.hidden = true; } };
+
+    if (cv) {
+      if (window.PointerEvent) {
+        cv.addEventListener('pointerdown', onDown, false);
+        cv.addEventListener('pointermove', onMove, false);
+        cv.addEventListener('pointerup', onUp, false);
+        cv.addEventListener('pointercancel', onUp, false);
+      } else {
+        cv.addEventListener('touchstart', function (ev) {
+          var t = ev.changedTouches[0];
+          if (ev.preventDefault) { ev.preventDefault(); }
+          onDown({ pointerId: 1, clientX: t.clientX, clientY: t.clientY, cancelable: true, preventDefault: function () {} });
+        }, false);
+        cv.addEventListener('touchmove', function (ev) {
+          if (ev.preventDefault) { ev.preventDefault(); }
+          var t = ev.changedTouches[0];
+          onMove({ pointerId: 1, clientX: t.clientX, clientY: t.clientY, cancelable: true, preventDefault: function () {} });
+        }, false);
+        cv.addEventListener('touchend', function () { onUp({ pointerId: 1 }); }, false);
+      }
+    }
+
+    function relayout() { fitBoard(); render(); }
+    window.addEventListener('resize', relayout, false);
+    window.addEventListener('orientationchange', function () { setTimeout(relayout, 120); }, false);
+    if (window.MutationObserver && $('boardWrap')) {
+      try {
+        new MutationObserver(relayout).observe($('boardWrap'), { attributes: true, attributeFilter: ['style'] });
+      } catch (e) {}
+    }
+
+    fitBoard();
+    afterChange();
+    updateHead();
+  }
+
+  /* ------------------------------------------------------------- 테스트용 */
+  window.__connect = {
+    puzzles: function () { return PUZZLES; },
+    state: function () { return st; },
+    current: cur,
+    select: select,
+    stageSelect: function (n) { select(n, 1); },
+    down: function (c, r) { return pointerDown(r * cur().cols + c); },
+    moveTo: function (c, r) { return pointerMove(r * cur().cols + c); },
+    up: endStroke,
+    tap: function (c, r) { pointerDown(r * cur().cols + c); return endStroke(); },
+    pathOf: function (i) { return st.paths[i] ? st.paths[i].slice() : []; },
+    paths: function () { return st.paths; },
+    connected: function (i) { return isConnected(i); },
+    undo: undo,
+    reset: resetBoard,
+    hint: showHint,
+    say: function () { return $('say').textContent; },
+    toastText: function () { return $('toast').hidden ? '' : $('toast').textContent; },
+    isComplete: function () { return st.complete; },
+    advancePending: function () { return st.advanceTimer !== null; },
+    advanceMs: ADVANCE_MS,
+    nextTarget: nextTarget,
+    layout: function () { return { cell: view.cell, w: view.w, h: view.h, dpr: view.dpr }; },
+    fit: function () { fitBoard(); render(); },
+    ownerAt: function (c, r) { return st.own[r * cur().cols + c]; },
+    blanks: function () { return st.blanks.slice(); },
+    doneMap: function () { return doneMap; },
+    solution: function (i) { return cur()._sol[i].slice(); },
+    setSound: function (v) { sndOn = !!v; },
+    /* 테스트 전용: 규칙을 건너뛰고 판을 직접 만들어 본다 */
+    setPaths: function (obj) {
+      st.paths = {};
+      for (var k in obj) { if (obj.hasOwnProperty(k)) { st.paths[k] = obj[k].slice(); } }
+      st.stroke = null;
+      st.hintColor = -1;
+      st.justConnected = -1;
+      afterChange();
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, false);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

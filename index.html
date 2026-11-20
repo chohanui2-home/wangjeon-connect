@@ -667,6 +667,7 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     st.stage = stage;
     st.no = no;
     buildChips();
+    fitBoard();          /* 단계마다 판 크기가 다르니 캔버스를 다시 맞춘다 */
     afterChange();
   }
 

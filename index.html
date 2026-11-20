@@ -841,17 +841,21 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
       }
     }
 
-    /* 지금 짚고 있는 칸 */
-    if (st.stroke || st.tap >= 0) {
-      var pp = st.paths[st.stroke ? st.stroke.color : st.tap];
+    /* 지금 짚고 있는 칸: 점 위에서는 그리지 않는다(점 테두리와 겹쳐 지저분해진다) */
+    var act = st.stroke ? st.stroke.color : (st.tap >= 0 ? st.tap : -1);
+    if (act >= 0) {
+      var pp = st.paths[act];
       if (pp && pp.length) {
         var hcell = pp[pp.length - 1];
-        var hcc = hcell % pz.cols, hrr = (hcell - hcc) / pz.cols;
-        ctx.beginPath();
-        ctx.arc((hcc + 0.5) * cs, (hrr + 0.5) * cs, cs * 0.40, 0, TAU);
-        ctx.strokeStyle = 'rgba(39,70,61,.32)';
-        ctx.lineWidth = Math.max(2, cs * 0.05);
-        ctx.stroke();
+        var hd = pz._dot[act];
+        if (hcell !== hd[0] && hcell !== hd[1]) {
+          var hcc = hcell % pz.cols, hrr = (hcell - hcc) / pz.cols;
+          ctx.beginPath();
+          ctx.arc((hcc + 0.5) * cs, (hrr + 0.5) * cs, cs * 0.34, 0, TAU);
+          ctx.strokeStyle = 'rgba(39,70,61,.20)';
+          ctx.lineWidth = Math.max(2, cs * 0.04);
+          ctx.stroke();
+        }
       }
     }
   }
@@ -870,8 +874,12 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     } else if (st.hintColor >= 0) {
       text = pz._name[st.hintColor] + ' 힌트를 그렸어요' + (st.hintCleared ? ' · 겹치던 선 ' + st.hintCleared + '개는 지웠어요' : '');
       cls = 'ok';
-    } else if (st.stroke || st.tap >= 0) {
+    } else if ((st.stroke || st.tap >= 0)
+               && !isConnected(st.stroke ? st.stroke.color : st.tap)) {
       text = pz._name[st.stroke ? st.stroke.color : st.tap] + ' 잇는 중 · 남은 색 ' + (pz.pairs.length - st.connected) + '개';
+    } else if (st.stroke || st.tap >= 0) {
+      text = pz._name[st.stroke ? st.stroke.color : st.tap] + ' 완성! 남은 색 '
+        + (pz.pairs.length - st.connected) + '개 · 빈칸 ' + st.blanks.length + '칸';
     } else if (st.justConnected >= 0) {
       text = pz._name[st.justConnected] + ' 완성! 남은 색 ' + (pz.pairs.length - st.connected) + '개 · 빈칸 ' + st.blanks.length + '칸';
       cls = 'ok';

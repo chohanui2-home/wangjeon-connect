@@ -699,7 +699,7 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     var w = wrap.clientWidth || 320;
     var h = wrap.clientHeight || 320;
     var cell = Math.floor(Math.min((w - 2) / pz.cols, (h - 2) / pz.rows));
-    cell = Math.max(18, Math.min(cell, 92));
+    cell = Math.max(18, Math.min(cell, 126));
     var bw = cell * pz.cols, bh = cell * pz.rows;
     var dpr = Math.min(2.5, Math.max(1, window.devicePixelRatio || 1));
     view.cell = cell; view.dpr = dpr; view.w = bw; view.h = bh;
@@ -827,10 +827,9 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
         ctx.fillStyle = col.hex;
         ctx.fill();
         ctx.beginPath();
-        ctx.arc(x, y, rr * 0.58, 0, TAU);
-        ctx.strokeStyle = 'rgba(255,255,255,.55)';
-        ctx.lineWidth = Math.max(1.4, rr * 0.3);
-        ctx.stroke();
+        ctx.arc(x - rr * 0.24, y - rr * 0.26, rr * 0.3, 0, TAU);
+        ctx.fillStyle = 'rgba(255,255,255,.42)';
+        ctx.fill();
         if (isConnected(i)) {
           ctx.beginPath();
           ctx.arc(x, y, rr + Math.max(3, cs * 0.075), 0, TAU);

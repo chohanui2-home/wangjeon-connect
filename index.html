@@ -209,6 +209,7 @@ header.topbar h1{
   <div class="sheet" role="dialog" aria-modal="true" aria-label="놀이 방법">
     <h2>이렇게 놀아요</h2>
     <p><b>같은 색 두 점</b>을 손가락으로 이어 주세요. 상하좌우로만 움직이고, 한 칸씩 지나가요.</p>
+    <p>점을 <b>톡</b> 누른 다음 옆 칸을 톡톡 눌러도 한 칸씩 이어져요. 끌어서 그어도 똑같아요.</p>
     <p>다른 색 선이나 다른 색 점 위로는 지나갈 수 없어요. 잘못 그었으면 <b>되돌리기</b>를 누르면 한 번에 한 동작씩 물러나요.</p>
     <p>색을 다 이어도 <b>빈칸이 하나라도 남으면</b> 아직 완성이 아니에요. 판의 모든 칸을 채우면 다음 문제로 넘어가요.</p>
     <p><b>힌트 보기</b>는 아직 못 이은 한 색의 길을 보여 주고, 그 길과 겹치던 다른 색 선은 지워요.</p>
@@ -258,6 +259,7 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     paths: {},          /* 색 번호 -> 칸 번호 배열 */
     own: [],            /* 칸 번호 -> 그 칸을 가진 색 (-1 이면 빈칸) */
     stroke: null,       /* 그리는 중인 색 {color, done} */
+    tap: -1,            /* 톡 눌러 고른 색: 다음 칸을 눌러 이어 그린다 */
     complete: false,
     hintColor: -1,
     blanks: [],
@@ -393,6 +395,7 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     }
     st.hintColor = -1;
     st.stroke = null;
+    st.tap = -1;
     st.justConnected = -1;
     afterChange();
   }
@@ -410,6 +413,7 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     pushUndo();
     st.paths = {};
     st.stroke = null;
+    st.tap = -1;
     st.hintColor = -1;
     st.justConnected = -1;
     st.hintCleared = 0;
@@ -455,7 +459,7 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
       if (k < 0) { st.stroke = null; return false; }
       st.paths[owner] = st.paths[owner].slice(0, k + 1);
     }
-    st.stroke = { color: owner, done: false };
+    st.stroke = { color: owner, done: false, moved: false };
     afterChange();
     beep(620, 0, 0.05, 0.035);
     return true;
@@ -527,28 +531,43 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     return moved;
   }
 
+  /* 점을 톡 누르고 손을 떼면 그 색을 열어 둔다. 그다음 옆 칸을 톡톡 누르면
+     한 칸씩 이어지므로, 끌기 어려운 작은 손도 그대로 그릴 수 있다. */
   function endStroke() {
-    var changed = false;
-    if (st.stroke) {
-      var p = st.paths[st.stroke.color];
-      if (p && p.length === 1) {
-        /* 한 칸만 찍고 손을 뗐다: 점만 남기고 선은 지운다 */
-        st.paths[st.stroke.color] = [];
-        changed = true;
-      }
-      st.stroke = null;
-    }
-    if (changed) { afterChange(); }
+    if (!st.stroke) { return true; }
+    var ci = st.stroke.color, p = st.paths[ci], dragged = st.stroke.moved;
+    st.stroke = null;
+    /* 끌지 않고 톡톡 눌러 그렸으면 그 색을 열어 둔 채로 이어 갈 수 있게 한다 */
+    if (!p || p.length <= 1 || !dragged) { st.tap = ci; } else { st.tap = -1; }
+    afterChange();
     return true;
   }
 
   function pointerDown(cell) {
     cancelAdvance();
+    if (st.tap >= 0) {
+      var ci = st.tap, p = st.paths[ci] || [];
+      var own = st.own[cell];
+      var otherDot = own >= 0 && own !== ci;
+      if (!otherDot && p.length && (p.indexOf(cell) >= 0 || adjacent(p[p.length - 1], cell))) {
+        st.tap = -1;
+        if (isConnected(ci)) { afterChange(); return false; }
+        st.stroke = { color: ci, done: false, moved: false };
+        var moved = driveTo(cell);
+        if (!moved) { st.stroke = null; afterChange(); }
+        return moved;
+      }
+      st.tap = -1;
+      if (own >= 0) { return startAt(cell); }
+      afterChange();
+      return false;
+    }
     return startAt(cell);
   }
 
   function pointerMove(cell) {
     if (!st.stroke) { return false; }
+    st.stroke.moved = true;
     return driveTo(cell);
   }
 
@@ -580,6 +599,7 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     st.paths[target] = sol.slice();
     st.hintColor = target;
     st.stroke = null;
+    st.tap = -1;
     afterChange();
     beep(760, 0, 0.08, 0.05);
     beep(1010, 0.08, 0.1, 0.045);
@@ -626,6 +646,7 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
   function clearBoard() {
     st.paths = {};
     st.stroke = null;
+    st.tap = -1;
     st.hintColor = -1;
     st.blanks = [];
     st.connected = 0;
@@ -821,8 +842,8 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     }
 
     /* 지금 짚고 있는 칸 */
-    if (st.stroke) {
-      var pp = st.paths[st.stroke.color];
+    if (st.stroke || st.tap >= 0) {
+      var pp = st.paths[st.stroke ? st.stroke.color : st.tap];
       if (pp && pp.length) {
         var hcell = pp[pp.length - 1];
         var hcc = hcell % pz.cols, hrr = (hcell - hcc) / pz.cols;
@@ -849,8 +870,8 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
     } else if (st.hintColor >= 0) {
       text = pz._name[st.hintColor] + ' 힌트를 그렸어요' + (st.hintCleared ? ' · 겹치던 선 ' + st.hintCleared + '개는 지웠어요' : '');
       cls = 'ok';
-    } else if (st.stroke) {
-      text = pz._name[st.stroke.color] + ' 잇는 중 · 남은 색 ' + (pz.pairs.length - st.connected) + '개';
+    } else if (st.stroke || st.tap >= 0) {
+      text = pz._name[st.stroke ? st.stroke.color : st.tap] + ' 잇는 중 · 남은 색 ' + (pz.pairs.length - st.connected) + '개';
     } else if (st.justConnected >= 0) {
       text = pz._name[st.justConnected] + ' 완성! 남은 색 ' + (pz.pairs.length - st.connected) + '개 · 빈칸 ' + st.blanks.length + '칸';
       cls = 'ok';
@@ -1097,6 +1118,7 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
       st.paths = {};
       for (var k in obj) { if (obj.hasOwnProperty(k)) { st.paths[k] = obj[k].slice(); } }
       st.stroke = null;
+      st.tap = -1;
       st.hintColor = -1;
       st.justConnected = -1;
       afterChange();

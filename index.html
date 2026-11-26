@@ -901,19 +901,22 @@ var PUZZLES = [{"id":"1-1","stage":1,"no":1,"name":"첫걸음","cols":3,"rows":4
   }
 
   /* ------------------------------------------------------------ 완성/이동 */
+  /* 마지막 단계 번호 — 이 단계까지 다 풀면 '전체 클리어'다. */
+  function lastStage() { return STAGES[STAGES.length - 1].n; }
+
   function onSolved() {
-    var solvedStage = cur().stage;
+    var wasClear = stageDone(lastStage());
     doneMap[cur().id] = 1;
     buildChips();
     playWin();
     scheduleAdvance();
-    if (stageDone(solvedStage) && !shownStages[solvedStage]) {
-      shownStages[solvedStage] = 1;
-      setTimeout(function () { GameRec.open('🎉 ' + solvedStage + '단계 완성!'); }, 700);
+    /* 1~4단계를 깨도 기록 창은 띄우지 않고 그대로 다음 문제로 이어 간다.
+       기록 창은 마지막 단계를 끝내 전체 클리어가 된 그 순간에만 한 번 열고,
+       그 밖에는 위쪽 🏆 기록 버튼으로 연다. */
+    if (!wasClear && stageDone(lastStage())) {
+      setTimeout(function () { GameRec.open('🎉 전체 클리어!'); }, 700);
     }
   }
-
-  var shownStages = {};
 
   function doneCount() {
     var k, n = 0;
